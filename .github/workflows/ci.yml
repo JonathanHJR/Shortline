@@ -17,21 +17,21 @@ jobs:
       - run: npm test
 
     build-and-push:
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::910929919817:role/github-actions-shortline
-          aws-region: ap-southeast-1
-      - uses: aws-actions/amazon-ecr-login@v2
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: 910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest
+      needs: test
+      if: github.ref == 'refs/heads/main'
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        id-token: write
+      steps:
+        - uses: actions/checkout@v4
+        - uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: arn:aws:iam::910929919817:role/github-actions-shortline
+            aws-region: ap-southeast-1
+        - uses: aws-actions/amazon-ecr-login@v2
+        - uses: docker/build-push-action@v5
+          with:
+            context: .
+            push: true
+            tags: 910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest
