@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shortline
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shortline
+  template:
+    metadata:
+      labels:
+        app: shortline
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - name: shortline
+          image: 910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: shortline-config
+            - secretRef:
+                name: shortline-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shortline
+  labels:
+    app: shortline
+spec:
+  selector:
+    app: shortline
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
