@@ -11,6 +11,7 @@
       "Sid": "PushToShortlineRepo",
       "Effect": "Allow",
       "Action": [
+        "ecr:DescribeRepositories",
         "ecr:BatchCheckLayerAvailability",
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
