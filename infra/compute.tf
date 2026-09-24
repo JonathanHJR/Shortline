@@ -61,12 +61,15 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.app.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
+  # Referencing aws_ecr_repository.shortline.repository_url (rather than a
+  # hardcoded string) also makes Terraform wait until the repo actually
+  # exists before booting an instance that needs to pull from it.
   user_data = <<-EOF
     #!/bin/bash
     yum install -y docker
     systemctl start docker
     aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin 910929919817.dkr.ecr.${var.aws_region}.amazonaws.com
-    docker run -d -p ${var.app_port}:${var.app_port} -e PORT=${var.app_port} ${var.ecr_image}
+    docker run -d -p ${var.app_port}:${var.app_port} -e PORT=${var.app_port} ${aws_ecr_repository.shortline.repository_url}:latest
   EOF
 
   tags = { Name = "shortline" }

@@ -9,7 +9,3 @@ variable "instance_type" {
 variable "app_port" {
   default = 8080
 }
-
-variable "ecr_image" {
-  default = "910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest"
-}

@@ -33,5 +33,24 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          load: true
+          push: false
           tags: 910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest
+
+      # infra/ecr.tf now owns this repo, and it's torn down along with the
+      # rest of /infra when not in active use (see infra/README.md) — so
+      # its absence here is expected, not a failure. Skip the push rather
+      # than error, same pattern as capstone's ci.yml.
+      - name: Check whether the ECR repository exists
+        id: ecr
+        run: |
+          if aws ecr describe-repositories --repository-names shortline --region ap-southeast-1 >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ECR repository 'shortline' does not exist — infra is torn down. Skipping push."
+          fi
+
+      - name: Push image to ECR
+        if: steps.ecr.outputs.exists == 'true'
+        run: docker push 910929919817.dkr.ecr.ap-southeast-1.amazonaws.com/shortline:latest
